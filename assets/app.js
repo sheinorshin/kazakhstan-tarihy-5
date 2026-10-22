@@ -41,10 +41,14 @@
   };
 
   /* ---------- Басты бет ---------- */
+  const isPhone = () => window.matchMedia('(max-width: 760px)').matches;
+  /* Тараулар: компьютерде ашық, телефонда жиналған — басқанда ашылады */
   function chapterList() {
-    return CH.filter(c => c.n > 0).map(c => `<section class="chap rv">
-      <a class="chap-h" href="#c-${c.n}"><span class="chap-n">${c.n}</span><span><span class="eyebrow">${esc(c.era)}</span><h3>${esc(c.t)}</h3></span><span class="go">Тарауды ашу →</span></a>
-      <ul class="tlist">${TP.filter(t => t.ch === c.n).map(t => `<li><a href="#t-${t.id}"><span class="no">${t.n}</span><span class="tt">${esc(t.t)}</span></a></li>`).join('')}</ul></section>`).join('');
+    const open = !isPhone();
+    return CH.filter(c => c.n > 0).map(c => { const ts = TP.filter(t => t.ch === c.n); return `<details class="chap rv"${open ? ' open' : ''}>
+      <summary class="chap-h"><span class="chap-n">${c.n}</span><span><span class="eyebrow">${esc(c.era)}</span><h3>${esc(c.t)}</h3><span class="cnt">${ts.length} тақырып</span></span><span class="chev" aria-hidden="true"></span></summary>
+      <ul class="tlist">${ts.map(t => `<li><a href="#t-${t.id}"><span class="no">${t.n}</span><span class="tt">${esc(t.t)}</span></a></li>`).join('')}</ul>
+      <a class="chap-go" href="#c-${c.n}">Тарау туралы: мақсаты мен тапсырмалары →</a></details>`; }).join('');
   }
   function home() {
     const feats = [
@@ -117,15 +121,21 @@
       <div class="rq"><span class="ic">?</span><div><span class="eyebrow">Зерттеу сұрағы</span><div class="q">${esc(t.q)}</div></div></div>
       <div class="kw">${(t.kw || []).map(k => `<button class="chip" data-term="${esc(k)}">${esc(k)}</button>`).join('')}</div>
       </div></div>
+      ${(() => { /* Бөлімдер жолағы: басқанда сол бөлімге секіреді */
+        const short = s => s.length > 24 ? s.slice(0, 22).trim() + '…' : s;
+        const items = t.sec.map(([h], k) => ['s' + k, k ? short(h) : 'Мазмұны'])
+          .concat((t.fact || []).length ? [['facts', 'Қызықты']] : [], qs ? [['src', 'Дереккөздер']] : [], (t.dates || []).length ? [['dates', 'Даталар']] : [],
+            ppl ? [['ppl', 'Тұлғалар']] : [], [['teach', 'Мұғалімге']], (t.quiz || []).length ? [['quiz', 'Тест ★']] : []);
+        return `<nav class="toc read" aria-label="Тақырып бөлімдері"><div class="toc-in">${items.map(([k, l], n) => `<button type="button" data-jump="${k}"${n ? '' : ' class="on"'}>${esc(l)}</button>`).join('')}</div></nav>`; })()}
       <article class="read prose">
-        <p class="lead">${t.lead}</p>
-        ${t.sec.map(([h, ...ps]) => `<section class="sec rv"><h2>${esc(h)}</h2>${para(ps)}</section>`).join('')}
-        ${(t.fact || []).length ? `<div class="facts">${t.fact.map(f => `<div class="fact rv"><span class="ic">!</span><div><span class="ttl">Бұл қызықты</span><p>${esc(f)}</p></div></div>`).join('')}</div>` : ''}
-        ${qs ? `<h2>Дереккөздер сөйлейді</h2><div class="quotes">${qs}</div>` : ''}
-        ${(t.dates || []).length ? `<h2>Маңызды даталар</h2><div class="dates rv">${t.dates.map(([d, e]) => `<div class="date"><b>${esc(d)}</b>${esc(e)}</div>`).join('')}</div>` : ''}
-        ${ppl ? `<h2>Тақырыптағы тұлғалар</h2><p class="muted" style="margin:0">Тұлғаны басып, толық мәлімет терезесін ашыңыз.</p><div class="ppl">${ppl}</div>` : ''}
+        <p class="lead anchor" id="s0">${t.lead}</p>
+        ${t.sec.map(([h, ...ps], k) => `<section class="sec rv${k ? ' anchor' : ''}"${k ? ` id="s${k}"` : ''}><h2>${esc(h)}</h2>${para(ps)}</section>`).join('')}
+        ${(t.fact || []).length ? `<div class="facts anchor" id="facts">${t.fact.map(f => `<div class="fact rv"><span class="ic">!</span><div><span class="ttl">Бұл қызықты</span><p>${esc(f)}</p></div></div>`).join('')}</div>` : ''}
+        ${qs ? `<h2 class="anchor" id="src">Дереккөздер сөйлейді</h2><div class="quotes">${qs}</div>` : ''}
+        ${(t.dates || []).length ? `<h2 class="anchor" id="dates">Маңызды даталар</h2><div class="dates rv">${t.dates.map(([d, e]) => `<div class="date"><b>${esc(d)}</b>${esc(e)}</div>`).join('')}</div>` : ''}
+        ${ppl ? `<h2 class="anchor" id="ppl">Тақырыптағы тұлғалар</h2><p class="muted" style="margin:0">Тұлғаны басып, толық мәлімет терезесін ашыңыз.</p><p class="swipe-hint">← Карточкаларды жылжытыңыз →</p><div class="ppl">${ppl}</div>` : ''}
         ${sites.length ? `<h2>Ескерткіштер картада</h2><div class="kw">${sites.map(s => `<a class="chip" href="#m-${s}">${esc(SITEMAP[s][1])}</a>`).join('')}</div>` : ''}
-        <details class="box rv"><summary><span class="badge">М</span>Мұғалімге: сабақ мақсаттары мен тапсырмалар</summary><div class="in">
+        <details class="box rv anchor" id="teach"><summary><span class="badge">М</span>Мұғалімге: сабақ мақсаттары мен тапсырмалар</summary><div class="in">
           <h4>Бұл сабақта біз</h4><ul>${(t.goal || []).map(g => `<li>${esc(g)}</li>`).join('')}</ul>
           <h4>Оқулықтағы тапсырмалар</h4><ol>${(t.tasks || []).map(x => `<li>${esc(x)}</li>`).join('')}</ol>
           <p class="muted" style="margin-top:12px;font-size:15px">Оқулық беттері: ${esc(t.pg)}. Сабақ саны: ${t.ls}.</p></div></details>
@@ -135,7 +145,7 @@
   }
   function quizBox(t) {
     if (!t.quiz || !t.quiz.length) return '';
-    return `<section class="box quiz rv" data-quiz="${t.id}"><div class="box-h"><span class="badge">★</span>Өзіңді тексер</div><div class="in">
+    return `<section class="box quiz rv anchor" id="quiz" data-quiz="${t.id}"><div class="box-h"><span class="badge">★</span>Өзіңді тексер</div><div class="in">
       ${t.quiz.map((q, qi) => { const opts = shuffle(q[1].map((o, oi) => [o, oi === q[2]])); return `<div class="qq" data-qi="${qi}"><div class="qt">${qi + 1}. ${esc(q[0])}</div><div class="opts">${opts.map(([o, ok]) => `<button class="opt" data-ok="${ok ? 1 : 0}">${esc(o)}</button>`).join('')}</div><div class="why" hidden>${q[3] ? esc(q[3]) : ''}</div></div>`; }).join('')}
       <div class="score" hidden><span class="big">0/0</span><span class="msg"></span><button class="btn alt" data-retry="${t.id}">Қайта бастау</button></div></div></section>`;
   }
@@ -202,9 +212,23 @@
   function openModal(inner) {
     closeModal(true); lastFocus = document.activeElement;
     const m = document.createElement('div'); m.className = 'modal'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'mtitle');
-    m.innerHTML = `<div class="shade" data-close></div><div class="sheet"><button class="ib x" data-close aria-label="Жабу">${ICON.close}</button>${inner}</div>`;
+    m.innerHTML = `<div class="shade" data-close></div><div class="sheet"><div class="sheet-bar"><span class="grip" aria-hidden="true"></span><button class="ib x" data-close aria-label="Жабу">${ICON.close}</button></div>${inner}</div>`;
     document.body.appendChild(m); document.body.style.overflow = 'hidden';
-    setTimeout(() => { const b = $('.sheet .x', m); if (b) b.focus(); }, 30);
+    setTimeout(() => { const b = $('.sheet .x', m); if (b) b.focus({ preventScroll: true }); }, 30);
+    /* Телефонда терезені төмен сырғытып жабуға болады */
+    const sh = $('.sheet', m); let y0 = null, dy = 0;
+    sh.addEventListener('touchstart', e => { if (sh.scrollTop <= 0) { y0 = e.touches[0].clientY; dy = 0; sh.style.transition = 'none'; } }, { passive: true });
+    sh.addEventListener('touchmove', e => { if (y0 == null) return; dy = e.touches[0].clientY - y0; if (dy > 0) sh.style.transform = `translateY(${dy}px)`; else { y0 = null; sh.style.transform = ''; } }, { passive: true });
+    sh.addEventListener('touchend', () => { if (y0 == null) return; y0 = null; sh.style.transition = 'transform .25s ease'; if (dy > 110) { sh.style.transform = 'translateY(100%)'; setTimeout(() => closeModal(), 220); } else sh.style.transform = ''; });
+  }
+  function openMore() {
+    const still = document.body.classList.contains('still');
+    openModal(`<div class="sheet-top" style="grid-template-columns:1fr"><div><span class="eyebrow">Мәзір</span><h2 id="mtitle">Тағы</h2></div></div>
+      <div class="sheet-body"><div class="more-grid">
+        <a href="#timeline">${window.figure('deer')}Уақыт өзені</a><a href="#map">${window.figure('camel')}Карта</a><a href="#glossary">${window.figure('yurt')}Сөздік</a></div>
+        <button class="more-row" role="switch" aria-checked="${isDark()}" data-toggle="theme"><span>Қараңғы түс</span><span class="sw"></span></button>
+        <button class="more-row" role="switch" aria-checked="${!still}" data-toggle="motion"><span>Анимация</span><span class="sw"></span></button>
+        <p class="muted" style="font-size:14px;margin:16px 2px 0">Оқулық авторлары: ${esc(B.authors.join(', '))}. Сайтты жасаған: <b>${esc(B.maker)}</b>.</p></div>`);
   }
   function closeModal(silent) {
     const m = $('.modal'); if (!m) return; m.remove(); document.body.style.overflow = '';
@@ -418,13 +442,30 @@
     else html = notFound();
     app.innerHTML = html;
     $$('.links a').forEach(a => a.classList.toggle('on', a.dataset.nav === nav));
+    const tab = ['timeline', 'map', 'glossary'].includes(nav) ? 'more' : nav;
+    $$('.tabbar [data-tab]').forEach(a => { a.classList.toggle('on', a.dataset.tab === tab); if (a.tagName === 'A') { if (a.dataset.tab === tab) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); } });
     $('.links').classList.remove('open');
-    window.scrollTo(0, 0);
+    document.body.classList.remove('nav-hidden');
+    window.scrollTo(0, 0); lastY = 0;
     document.title = (($('h1', app) || {}).textContent || B.title) + ' · Қазақстан тарихы, 5-сынып';
     observe(); countUp();
-    if (nav === 'map' && document.fonts && document.fonts.ready) document.fonts.ready.then(() => { const mb = $('#mapbox'); if (mb) mb.innerHTML = mapSvg(); });
+    if (nav === 'map') { centerMap(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { const mb = $('#mapbox'); if (mb) { mb.innerHTML = mapSvg(); centerMap(); } }); }
     if (after) after();
   }
+  /* Телефонда карта көлденең жылжиды: таңдалған нүктені не тығыз оңтүстікті ортаға әкелеміз */
+  function centerMap() {
+    const mb = $('#mapbox'); if (!mb || mb.scrollWidth <= mb.clientWidth) return;
+    const s = SITEMAP[mapSel], fx = s ? (proj(s[2], s[3])[0] + 6) / 740 : .58;
+    mb.scrollLeft = Math.max(0, fx * mb.scrollWidth - mb.clientWidth / 2);
+  }
+  /* Тақырып бөлімдері: қай бөлімде тұрғанымызды белгілеу */
+  function spyToc() {
+    const btns = $$('.toc button'); if (!btns.length) return;
+    const line = (isPhone() ? 52 : 60) + 80; let cur = btns[0];
+    btns.forEach(b => { const el = document.getElementById(b.dataset.jump); if (el && el.getBoundingClientRect().top <= line) cur = b; });
+    if (!cur.classList.contains('on')) { btns.forEach(b => b.classList.toggle('on', b === cur)); const strip = cur.parentNode; strip.scrollTo({ left: cur.offsetLeft - strip.clientWidth / 2 + cur.offsetWidth / 2, behavior: 'smooth' }); }
+  }
+  let lastY = 0;
 
   /* Пайда болу әсері */
   let io = null;
@@ -440,15 +481,18 @@
 
   /* ---------- Оқиғалар ---------- */
   document.addEventListener('click', e => {
-    const el = e.target.closest('[data-person],[data-term],[data-close],[data-pcat],[data-tl],[data-mtype],[data-site],[data-abc],[data-game],[data-next],.opt,[data-retry]');
+    const el = e.target.closest('[data-person],[data-term],[data-close],[data-pcat],[data-tl],[data-mtype],[data-site],[data-abc],[data-game],[data-next],.opt,[data-retry],[data-jump],[data-toggle],[data-tab="more"]');
     if (!el) return;
     if (el.matches('[data-close]')) return closeModal();
+    if (el.matches('[data-tab="more"]')) return openMore();
+    if (el.dataset.toggle) { if (el.dataset.toggle === 'theme') toggleTheme(); else toggleMotion(); el.setAttribute('aria-checked', el.dataset.toggle === 'theme' ? isDark() : !document.body.classList.contains('still')); return; }
+    if (el.dataset.jump) { const tg = document.getElementById(el.dataset.jump); if (tg) { if (tg.tagName === 'DETAILS') tg.open = true; tg.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }); $$('.toc button').forEach(b => b.classList.toggle('on', b === el)); } return; }
     if (el.dataset.person) { e.preventDefault(); return openPerson(el.dataset.person); }
     if (el.dataset.term) return openTerm(el.dataset.term);
     if (el.dataset.pcat) { pFilter.cat = el.dataset.pcat; $$('[data-pcat]').forEach(b => b.classList.toggle('on', b === el)); $('#plist').innerHTML = personsList(); return; }
     if (el.dataset.tl) { tlTab = el.dataset.tl; app.innerHTML = timelinePage(); return; }
     if (el.dataset.mtype) { mapType = el.dataset.mtype; $$('[data-mtype]').forEach(b => b.classList.toggle('on', b === el)); $('#mapbox').innerHTML = mapSvg(); return; }
-    if (el.dataset.site) { mapSel = el.dataset.site; if (mapType !== 'all' && SITEMAP[mapSel][6] !== mapType) mapType = 'all'; $('#mapbox').innerHTML = mapSvg(); $('#mapcard').innerHTML = mapCard(); if (el.classList.contains('chip')) $('#mapbox').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+    if (el.dataset.site) { mapSel = el.dataset.site; if (mapType !== 'all' && SITEMAP[mapSel][6] !== mapType) mapType = 'all'; $('#mapbox').innerHTML = mapSvg(); $('#mapcard').innerHTML = mapCard(); if (el.classList.contains('chip')) { centerMap(); $('#mapbox').scrollIntoView({ behavior: 'smooth', block: 'center' }); } return; }
     if (el.dataset.abc != null && el.matches('[data-abc]')) { gl = el.dataset.abc; $$('[data-abc]').forEach(b => b.classList.toggle('on', b === el)); $('#glist').innerHTML = glossList(); return; }
     if (el.dataset.game) return startGame(el.dataset.game);
     if (el.matches('[data-next]')) { G.i++; renderGame(); return; }
@@ -476,13 +520,26 @@
     if (e.target.id === 'gsearch') { gq = e.target.value; $('#glist').innerHTML = glossList(); }
   });
   window.addEventListener('hashchange', route);
-  window.addEventListener('scroll', () => { const p = $('#progress'); if (!p) return; const d = document.documentElement, max = d.scrollHeight - innerHeight; p.style.width = (max > 0 ? Math.min(100, scrollY / max * 100) : 0) + '%'; }, { passive: true });
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(() => {
+      ticking = false;
+      const p = $('#progress'), d = document.documentElement, max = d.scrollHeight - innerHeight, y = scrollY;
+      if (p) p.style.width = (max > 0 ? Math.min(100, y / max * 100) : 0) + '%';
+      /* Телефонда төмен оқығанда жоғарғы жолақ жасырылады, жоғары сырғытқанда қайта шығады */
+      if (isPhone() && !$('.modal')) { if (y > lastY + 8 && y > 160) document.body.classList.add('nav-hidden'); else if (y < lastY - 8 || y < 80) document.body.classList.remove('nav-hidden'); }
+      lastY = y; spyToc();
+    });
+  }, { passive: true });
 
   /* ---------- Тақырып түсі және қозғалыс ---------- */
   function isDark() { const t = document.documentElement.dataset.theme; return t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches; }
   function paintTools() { $('#themeBtn').innerHTML = isDark() ? ICON.sun : ICON.moon; $('#themeBtn').setAttribute('aria-label', isDark() ? 'Жарық түске ауысу' : 'Қараңғы түске ауысу'); $('#motionBtn').innerHTML = document.body.classList.contains('still') ? ICON.play : ICON.pause; $('#motionBtn').setAttribute('aria-label', document.body.classList.contains('still') ? 'Анимацияны қосу' : 'Анимацияны тоқтату'); }
-  $('#themeBtn').addEventListener('click', () => { const d = !isDark(); document.documentElement.dataset.theme = d ? 'dark' : 'light'; store.set('theme', d ? 'dark' : 'light'); paintTools(); });
-  $('#motionBtn').addEventListener('click', () => { document.body.classList.toggle('still'); store.set('still', document.body.classList.contains('still')); paintTools(); });
+  function toggleTheme() { const d = !isDark(); document.documentElement.dataset.theme = d ? 'dark' : 'light'; store.set('theme', d ? 'dark' : 'light'); paintTools(); }
+  function toggleMotion() { document.body.classList.toggle('still'); store.set('still', document.body.classList.contains('still')); paintTools(); }
+  $('#themeBtn').addEventListener('click', toggleTheme);
+  $('#motionBtn').addEventListener('click', toggleMotion);
   $('#menuBtn').addEventListener('click', () => $('.links').classList.toggle('open'));
   const th = store.get('theme', null); if (th) document.documentElement.dataset.theme = th;
   if (store.get('still', false)) document.body.classList.add('still');
