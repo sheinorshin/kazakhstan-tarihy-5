@@ -621,3 +621,9 @@ body.still #dust, body.still #bgfx { display: none; }
   #dust, #bgfx { display: none; }
 }
 @media print { .nav, #bgfx, #dust, footer, .band, .quiz, .pager { display: none !important; } body { background: #fff; } }
+
+/* Төменгі мәзір: тар экранда және қаріп жүктелмей тұрғанда да жазулар толық сыйсын */
+@media (max-width: 760px) {
+  .tabbar { padding-left: max(2px, env(safe-area-inset-left, 0px)); padding-right: max(2px, env(safe-area-inset-right, 0px)); }
+  .tabbar a, .tabbar button { padding-left: 0; padding-right: 0; font-size: clamp(9.5px, 3vw, 11.5px); }
+}
