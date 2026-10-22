@@ -34,8 +34,8 @@
       <button class="ib menu-btn" id="menuBtn" type="button" aria-label="Мәзір"></button>
     </div>
   </div>
-  <div id="progress"></div>
 </header>
+<div id="progress" aria-hidden="true"></div>
 <main id="app" tabindex="-1"></main>
 <footer>
   <div class="wrap">
@@ -43,6 +43,13 @@
     <span>Сайтты жасаған: <b>Аусулу Карабаева</b></span>
   </div>
 </footer>
+<nav class="tabbar" aria-label="Төменгі мәзір">
+  <a href="#home" data-tab="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5L12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5v-5h4v5"/></svg><span>Басты</span></a>
+  <a href="#topics" data-tab="topics"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5c2.5-1.2 5.5-1.2 8 .5 2.5-1.7 5.5-1.7 8-.5v13c-2.5-1.2-5.5-1.2-8 .5-2.5-1.7-5.5-1.7-8-.5z"/><path d="M12 6v13"/></svg><span>Тақырыптар</span></a>
+  <a href="#persons" data-tab="persons"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.3 2.8-5 5.5-5s4.9 1.7 5.5 5"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.2c2.5-.3 4.4 1.1 5 4.3"/></svg><span>Тұлғалар</span></a>
+  <a href="#game" data-tab="game"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5l2.5 5.2 5.6.7-4.1 3.9 1 5.6-5-2.7-5 2.7 1-5.6-4.1-3.9 5.6-.7z"/></svg><span>Сайыс</span></a>
+  <button type="button" data-tab="more" id="moreBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/></svg><span>Тағы</span></button>
+</nav>
 <noscript><p style="padding:24px;font:600 18px sans-serif">Сайт жұмыс істеуі үшін браузерде JavaScript қосулы болуы керек.</p></noscript>
 <script src="assets/art.js"></script>
 <script src="assets/data-1.js"></script>
