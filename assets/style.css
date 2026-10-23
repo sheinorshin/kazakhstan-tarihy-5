@@ -638,3 +638,15 @@ body.still #dust, body.still #bgfx { display: none; }
   .tabbar { padding-left: max(2px, env(safe-area-inset-left, 0px)); padding-right: max(2px, env(safe-area-inset-right, 0px)); }
   .tabbar a, .tabbar button { padding-left: 0; padding-right: 0; font-size: clamp(9.5px, 3vw, 11.5px); }
 }
+
+/* Өнімділік: экраннан тыс көріністер мен ашық терезе артындағы беттің анимациясы тоқтайды */
+.off, .off *, .off::before, .off::after, .off *::before, .off *::after { animation-play-state: paused !important; }
+body.modal-open #app *, body.modal-open #bgfx *, body.modal-open #dust i { animation-play-state: paused !important; }
+body.nav-hidden .nav * { animation-play-state: paused !important; }
+/* Телефонда жолақтардың артын бұлдырату (backdrop-filter) өте ауыр, орнына тұтас түс */
+@media (max-width: 760px) {
+  .nav, .toc { background: var(--bg); }
+  .tabbar { background: var(--panel); }
+  .modal .shade { background: rgba(20, 14, 8, .62); }
+  .nav, .toc, .tabbar, .modal .shade { -webkit-backdrop-filter: none; backdrop-filter: none; }
+}

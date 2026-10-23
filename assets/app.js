@@ -213,7 +213,7 @@
     closeModal(true); lastFocus = document.activeElement;
     const m = document.createElement('div'); m.className = 'modal'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-modal', 'true'); m.setAttribute('aria-labelledby', 'mtitle');
     m.innerHTML = `<div class="shade" data-close></div><div class="sheet"><div class="sheet-bar"><span class="grip" aria-hidden="true"></span><button class="ib x" data-close aria-label="Жабу">${ICON.close}</button></div>${inner}</div>`;
-    document.body.appendChild(m); document.body.style.overflow = 'hidden';
+    document.body.appendChild(m); document.body.style.overflow = 'hidden'; document.body.classList.add('modal-open');
     setTimeout(() => { const b = $('.sheet .x', m); if (b) b.focus({ preventScroll: true }); }, 30);
     /* Телефонда терезені төмен сырғытып жабуға болады */
     const sh = $('.sheet', m); let y0 = null, dy = 0;
@@ -239,7 +239,7 @@
         <p class="made">Сайт ${esc(B.madeWith)} көмегімен жасалды.</p></div>`);
   }
   function closeModal(silent) {
-    const m = $('.modal'); if (!m) return; m.remove(); document.body.style.overflow = '';
+    const m = $('.modal'); if (!m) return; m.remove(); document.body.style.overflow = ''; document.body.classList.remove('modal-open');
     if (!silent && lastFocus && lastFocus.focus) try { lastFocus.focus(); } catch (e) { /* */ }
   }
 
@@ -425,7 +425,7 @@
     const x = c.getContext('2d'), W = c.width = innerWidth, H = c.height = innerHeight;
     const cols = ['#E2B246', '#D29E2E', '#41C0B1', '#E86E50', '#8DAEE6'];
     const P = Array.from({ length: 120 }, () => ({ x: W / 2 + (Math.random() - .5) * 120, y: H * .45, vx: (Math.random() - .5) * 13, vy: -Math.random() * 13 - 4, r: Math.random() * 6, s: 5 + Math.random() * 6, c: cols[Math.floor(Math.random() * cols.length)], d: (Math.random() - .5) * .3 }));
-    let t = 0; (function f() { x.clearRect(0, 0, W, H); P.forEach(p => { p.vy += .32; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.r += p.d; x.save(); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c; x.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); x.restore(); }); if (++t < 160) requestAnimationFrame(f); else x.clearRect(0, 0, W, H); })();
+    let t = 0; (function f() { x.clearRect(0, 0, W, H); P.forEach(p => { p.vy += .32; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.r += p.d; x.save(); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c; x.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); x.restore(); }); if (++t < 160) requestAnimationFrame(f); else { x.clearRect(0, 0, W, H); c.remove(); } })();
   }
 
   function notFound() { return `<div class="page"><div class="wrap read" style="padding-top:60px"><h1>Бет табылмады</h1><p><a href="#home">Басты бетке оралу</a></p></div></div>`; }
@@ -456,7 +456,7 @@
     document.body.classList.remove('nav-hidden');
     window.scrollTo(0, 0); lastY = 0;
     document.title = (($('h1', app) || {}).textContent || B.title) + ' · Қазақстан тарихы, 5-сынып';
-    observe(); countUp();
+    observe(); countUp(); watchMotion();
     if (nav === 'map') { centerMap(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { const mb = $('#mapbox'); if (mb) { mb.innerHTML = mapSvg(); centerMap(); } }); }
     if (after) after();
   }
@@ -483,6 +483,22 @@
     io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('pop'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
     $$('.rv', app).forEach(el => { if (el.getBoundingClientRect().top > innerHeight) io.observe(el); });
   }
+  /* Экраннан тыс кеткен анимация тоқтап тұрады (жоғарғы сурет, карта, белгішелер, логотип) — телефон қызып, қатып қалмауы үшін.
+     Тоқтату CSS-тегі .off класымен жасалады, сондықтан «Анимация» ауыстырғышы бұрынғыдай жұмыс істейді. */
+  let mo = null;
+  function watchMotion() {
+    if (!('IntersectionObserver' in window) || !document.getAnimations) return;
+    if (mo) mo.disconnect();
+    mo = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('off', !e.isIntersecting)), { rootMargin: '60px 0px' });
+    const seen = new Set();
+    const watch = el => { if (el && !seen.has(el)) { seen.add(el); mo.observe(el); } };
+    $$('.band, #mapbox', app).forEach(watch);
+    document.getAnimations().forEach(a => {
+      const t = a.effect && a.effect.target;
+      if (!t || !t.closest || a.effect.getTiming().iterations !== Infinity || t.closest('#bgfx, #dust, .modal')) return;
+      watch(t.closest('svg') || t);
+    });
+  }
   function countUp() {
     $$('[data-count]', app).forEach(el => { const n = +el.dataset.count; let i = 0; const st = Math.max(1, Math.round(n / 30)); el.textContent = '0'; const tm = setInterval(() => { i = Math.min(n, i + st); el.textContent = i; if (i >= n) clearInterval(tm); }, 28); });
   }
@@ -498,7 +514,7 @@
     if (el.dataset.person) { e.preventDefault(); return openPerson(el.dataset.person); }
     if (el.dataset.term) return openTerm(el.dataset.term);
     if (el.dataset.pcat) { pFilter.cat = el.dataset.pcat; $$('[data-pcat]').forEach(b => b.classList.toggle('on', b === el)); $('#plist').innerHTML = personsList(); return; }
-    if (el.dataset.tl) { tlTab = el.dataset.tl; app.innerHTML = timelinePage(); return; }
+    if (el.dataset.tl) { tlTab = el.dataset.tl; app.innerHTML = timelinePage(); watchMotion(); return; }
     if (el.dataset.mtype) { mapType = el.dataset.mtype; $$('[data-mtype]').forEach(b => b.classList.toggle('on', b === el)); $('#mapbox').innerHTML = mapSvg(); return; }
     if (el.dataset.site) { mapSel = el.dataset.site; if (mapType !== 'all' && SITEMAP[mapSel][6] !== mapType) mapType = 'all'; $('#mapbox').innerHTML = mapSvg(); $('#mapcard').innerHTML = mapCard(); if (el.classList.contains('chip')) { centerMap(); $('#mapbox').scrollIntoView({ behavior: 'smooth', block: 'center' }); } return; }
     if (el.dataset.abc != null && el.matches('[data-abc]')) { gl = el.dataset.abc; $$('[data-abc]').forEach(b => b.classList.toggle('on', b === el)); $('#glist').innerHTML = glossList(); return; }
