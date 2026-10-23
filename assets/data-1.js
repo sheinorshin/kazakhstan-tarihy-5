@@ -13,8 +13,7 @@ window.BOOK = {
   makerLinks: [
     ['YouTube', 'https://www.youtube.com/@aisulukarabaeva8603'],
     ['Instagram', 'https://www.instagram.com/a.karabayeva80/']
-  ],
-  madeWith: 'Claude Opus 5.5 ultracode'
+  ]
 };
 
 window.CHAPTERS = [

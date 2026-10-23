@@ -236,7 +236,7 @@
         </section>
         <div class="note warn"><b>Ескерту.</b> Бұл сайт тек оқу мақсатында жасалған, коммерциялық мақсатта пайдаланылмайды. Сайтты немесе оның материалдарын кез келген түрде пайдалану автормен келісіліп, тек оның рұқсатымен жүзеге асырылуы тиіс.</div>
         <p class="muted" style="font-size:14px;margin:14px 2px 0">Оқулық авторлары: ${esc(B.authors.join(', '))}.</p>
-        <p class="made">Сайт ${esc(B.madeWith)} көмегімен жасалды.</p></div>`);
+        <div class="sh-sig" lang="en" translate="no"><span class="sh-sig__by">Crafted by <b>Claude Opus 5.5</b> (UltraCode)</span><span class="sh-sig__name">sheinorshin</span><a class="sh-sig__mail" href="mailto:sheinorshin&#64;gmail.com">sheinorshin&#64;gmail.com</a></div></div>`);
   }
   function closeModal(silent) {
     const m = $('.modal'); if (!m) return; m.remove(); document.body.style.overflow = ''; document.body.classList.remove('modal-open');
