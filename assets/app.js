@@ -228,7 +228,15 @@
         <a href="#timeline">${window.figure('deer')}Уақыт өзені</a><a href="#map">${window.figure('camel')}Карта</a><a href="#glossary">${window.figure('yurt')}Сөздік</a></div>
         <button class="more-row" role="switch" aria-checked="${isDark()}" data-toggle="theme"><span>Қараңғы түс</span><span class="sw"></span></button>
         <button class="more-row" role="switch" aria-checked="${!still}" data-toggle="motion"><span>Анимация</span><span class="sw"></span></button>
-        <p class="muted" style="font-size:14px;margin:16px 2px 0">Оқулық авторлары: ${esc(B.authors.join(', '))}. Сайтты жасаған: <b>${esc(B.maker)}</b>.</p></div>`);
+        <section class="about" aria-labelledby="about-h">
+          <span class="eyebrow">Автор туралы</span>
+          <h3 id="about-h" class="about-name">${esc(B.maker)}</h3>
+          <p>«Қазақстан тарихы» оқулығы (5-сынып) негізіндегі осы оқу сайтының авторы.</p>
+          <div class="about-links">${(B.makerLinks || []).map(([n, u]) => `<a class="btn alt" href="${esc(u)}" target="_blank" rel="noopener">${n === 'YouTube' ? '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="M10 9.2v5.6l4.8-2.8z" class="fill"/></svg>' : '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" class="fill"/></svg>'}${esc(n)}</a>`).join('')}</div>
+        </section>
+        <div class="note warn"><b>Ескерту.</b> Бұл сайт тек оқу мақсатында жасалған, коммерциялық мақсатта пайдаланылмайды. Сайтты немесе оның материалдарын кез келген түрде пайдалану автормен келісіліп, тек оның рұқсатымен жүзеге асырылуы тиіс.</div>
+        <p class="muted" style="font-size:14px;margin:14px 2px 0">Оқулық авторлары: ${esc(B.authors.join(', '))}.</p>
+        <p class="made">Сайт ${esc(B.madeWith)} көмегімен жасалды.</p></div>`);
   }
   function closeModal(silent) {
     const m = $('.modal'); if (!m) return; m.remove(); document.body.style.overflow = '';

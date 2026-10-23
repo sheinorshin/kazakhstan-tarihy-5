@@ -8,7 +8,13 @@ window.BOOK = {
   sub: 'Жалпы білім беретін мектептің 5-сыныбына арналған оқулық (1-бөлім)',
   authors: ['С.Р. Ахметова', 'А.М. Ибраева', 'А.А. Құлымбетова', 'А.С. Мағзұмова', 'А.М. Марқабаева'],
   pub: '«Назарбаев Зияткерлік мектептері» ДББҰ, Астана, 2017',
-  maker: 'Аусулу Карабаева'
+  maker: 'Айсұлу Карабаева',
+  /* Тек телефондағы «Тағы» мәзірінде көрінеді */
+  makerLinks: [
+    ['YouTube', 'https://www.youtube.com/@aisulukarabaeva8603'],
+    ['Instagram', 'https://www.instagram.com/a.karabayeva80/']
+  ],
+  madeWith: 'Claude Opus 5.5 ultracode'
 };
 
 window.CHAPTERS = [

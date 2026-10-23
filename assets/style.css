@@ -495,6 +495,17 @@ body.nav-hidden .toc { top: env(safe-area-inset-top, 0px); }
 .more-row[aria-checked="true"] .sw { background: var(--turq); }
 .more-row[aria-checked="true"] .sw::after { transform: translateX(20px); background: #fff; }
 
+.about { margin-top: 18px; padding: 16px; border-radius: 18px; background: linear-gradient(135deg, color-mix(in srgb, var(--gold2) 20%, var(--panel2)), var(--panel2)); border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent); }
+.about .eyebrow { display: block; margin-bottom: 6px; }
+.sheet .about-name { font: 800 26px/1.15 var(--f-d); margin: 0; }
+.about p { margin: 6px 0 12px; font-size: 15.5px; color: var(--ink2); }
+.about-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.about-links .btn { min-height: 44px; padding: 9px 14px; font-size: 15.5px; }
+.about-links svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linejoin: round; }
+.about-links svg .fill { fill: currentColor; stroke: none; }
+.note.warn { border-left-color: var(--carn); background: color-mix(in srgb, var(--carn) 10%, var(--panel)); font-size: 14.5px; line-height: 1.45; }
+.made { margin: 18px 0 4px; padding-top: 14px; border-top: 1px solid var(--line); text-align: center; font-size: 13.5px; color: var(--ink2); }
+
 /* =========================================================================
    ТЕЛЕФОН (≤ 760px): төменгі мәзір, жиналмалы тараулар, сырғымалы қатарлар,
    төменнен шығатын терезе, ықшам өлшемдер
